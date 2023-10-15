@@ -12,15 +12,15 @@ print('X_train: ' + str(train_X.shape))
 print('Y_train: ' + str(train_y.shape))
 print('X_test:  '  + str(test_X.shape))
 print('Y_test:  '  + str(test_y.shape))
-ai = Ml([28**2,16,16,10])
+ai = Ml([28**2,50,50,10])
 from matplotlib import pyplot
-
+print(train_X[0])
 tot = 0
 correct = 0
 cost = 0
 rounds = int(input("nbr: "))
 for i in range(rounds):
-    g = ai.guess(np.ndarray.flatten(train_X[i]))
+    g = ai.guess(np.ndarray.flatten(train_X[i])/255)
     #print(g,train_y[i])
     tot += 1
     if g == train_y[i]:
@@ -35,16 +35,15 @@ correct = 0
 cost = 0
 rounds = int(input("nbr: "))
 for i in range(rounds):
-    g = ai.guess(np.ndarray.flatten(train_X[i]))
-    print(g,train_y[i])
+    g = ai.guess(np.ndarray.flatten(test_X[i])/255)
+    #print(g,test_y[i])
     tot += 1
-    if g == train_y[i]:
+    if g == test_y[i]:
         correct += 1
-    cost += ai.cost(train_y[i])
-    ai.backProp(train_y[i])
-    print(correct/tot,ai.cost(train_y[i]),"\n", ai.last)
+    cost += ai.cost(test_y[i])
+    #print(correct/tot,ai.cost(test_y[i]),"\n", ai.last)
 
-"""
+print(correct/tot)
 for i in range(9):  
     g = ai.guess(np.ndarray.flatten(train_X[i]))
     print(g)
@@ -53,6 +52,8 @@ for i in range(9):
     pyplot.imshow(train_X[i], cmap=pyplot.get_cmap('gray'))
 pyplot.show()
 
+
+"""
 
 ai = Ml([5, 5])
 while True:

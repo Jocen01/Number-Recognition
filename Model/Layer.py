@@ -8,8 +8,8 @@ class Layer:
         self.nodes = np.zeros(nbrNodes)
         self.func = np.vectorize(func)
         self.funcDer = np.vectorize(funcDer)
-        self.weights = np.array([[r.random()*2-1 for _ in range(prevNbrNodes)] for _ in range(self.nbrNodes)])
-        self.bias = np.array([r.random()*2-1  for _ in range(self.nbrNodes)])
+        self.weights = np.array([[np.random.normal() for _ in range(prevNbrNodes)] for _ in range(self.nbrNodes)])
+        self.bias = np.array([np.random.normal()  for _ in range(self.nbrNodes)])
         self.dWeights = np.zeros(self.weights.shape)
         self.dBias = np.zeros(self.bias.shape)
         self.layerNbr = -1
@@ -22,8 +22,8 @@ class Layer:
         dZ = np.array(list(map(self.funcDer, self.nodes))).reshape(self.nbrNodes,1)
         dN = (dZ * dCdA)
         self.backPropWeights(dN)
-        self.backPropBias(dCdA)
-        return self.backPropCalcdCdAj(dCdA)
+        self.backPropBias(dN)
+        return self.backPropCalcdCdAj(dN)
 
     def backPropWeights(self, dN):
         dW = dN * self.prevLayer.nodes
@@ -33,16 +33,18 @@ class Layer:
         self.dBias += dN.reshape(self.nbrNodes)
 
     def backPropCalcdCdAj(self, dN):
-        nextdCdA = dN.reshape(1, dN.size).dot(self.weights)
+        nextdCdA = (dN.reshape(1, dN.size)).dot(self.weights)
         return nextdCdA.reshape(nextdCdA.size,1)
 
     def dCostLastLayer(self, correctArray):
-        assert self.nodes.size == correctArray.size
         dCdAj = (self.nodes - correctArray) * -2
         return dCdAj.reshape(self.nbrNodes,1)
     
-    def updateAfterBackProp(self):
-        self.weights += self.dWeights/25
-        self.bias += self.dBias/25
+    def updateAfterBackProp(self, d):
+        self.weights += self.dWeights/d
+        self.bias += self.dBias/d
+        self.resetDelta()
+
+    def resetDelta(self):
         self.dWeights = np.zeros(self.weights.shape)
         self.dBias = np.zeros(self.bias.shape)

@@ -14,6 +14,7 @@ print('X_test:  '  + str(test_X.shape))
 print('Y_test:  '  + str(test_y.shape))
 ai = Ml([28**2,50,50,10])
 from matplotlib import pyplot
+"""
 print(train_X[0])
 tot = 0
 correct = 0
@@ -42,8 +43,12 @@ for i in range(rounds):
         correct += 1
     cost += ai.cost(test_y[i])
     #print(correct/tot,ai.cost(test_y[i]),"\n", ai.last)
+"""
+rounds = int(input("nbr: "))
+ai.train(train_X[:max(rounds,10000)], train_y[:max(rounds,10000)],10)
+ai.testShow(test_X,test_y)
+print("final score on test data is ", ai.test(test_X[:10000],test_y[:10000]))
 
-print(correct/tot)
 for i in range(9):  
     g = ai.guess(np.ndarray.flatten(train_X[i]))
     print(g)

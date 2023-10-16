@@ -44,17 +44,20 @@ for i in range(rounds):
     cost += ai.cost(test_y[i])
     #print(correct/tot,ai.cost(test_y[i]),"\n", ai.last)
 """
-rounds = int(input("nbr: "))
-ai.train(train_X[:max(rounds,10000)], train_y[:max(rounds,10000)],10)
-ai.testShow(test_X,test_y)
+print("with bias")
+print((train_X[0]))
+ai.train(train_X, train_y,50)
 print("final score on test data is ", ai.test(test_X[:10000],test_y[:10000]))
+for lay in ai.layers[1:]:
+    print(max(np.ndarray.flatten(lay.weights)))
+    print(max(np.ndarray.flatten(lay.bias)))
+ai.testShow(test_X,test_y)
 
 for i in range(9):  
     g = ai.guess(np.ndarray.flatten(train_X[i]))
     print(g)
     pyplot.subplot(330 + 1 + i)
-    print(type(train_X[i]))
-    pyplot.imshow(train_X[i], cmap=pyplot.get_cmap('gray'))
+    pyplot.imshow(train_X[i]/255, cmap=pyplot.get_cmap('gray'))
 pyplot.show()
 
 

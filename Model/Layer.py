@@ -26,7 +26,7 @@ class Layer:
         return self.backPropCalcdCdAj(dN)
 
     def backPropWeights(self, dN):
-        dW = dN * self.prevLayer.nodes
+        dW = dN.dot(np.array([self.prevLayer.nodes]))
         self.dWeights += dW
 
     def backPropBias(self, dN):
@@ -37,12 +37,12 @@ class Layer:
         return nextdCdA.reshape(nextdCdA.size,1)
 
     def dCostLastLayer(self, correctArray):
-        dCdAj = (self.nodes - correctArray) * -2
+        dCdAj = (self.nodes - correctArray) * 2
         return dCdAj.reshape(self.nbrNodes,1)
     
     def updateAfterBackProp(self, d):
-        self.weights += self.dWeights/d
-        self.bias += self.dBias/d
+        self.weights -= self.dWeights/d
+        self.bias -= self.dBias/d
         self.resetDelta()
 
     def resetDelta(self):

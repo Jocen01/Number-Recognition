@@ -42,7 +42,6 @@ class Ml:
 
     def runEpoch(self, trainIn, trainAns, sizeBatch, gradientFactor):
         normalize = max(np.ndarray.flatten(trainIn[0]))
-        print(sizeBatch/gradientFactor, sizeBatch, gradientFactor)
         l = [i for i in range(len(trainIn))]
         random.shuffle(l)
         for idx,i in enumerate(l):
@@ -50,23 +49,36 @@ class Ml:
             self.guess(np.ndarray.flatten(data)/normalize)
             self.backProp(correct)
             if (idx+1)%sizeBatch == 0:
+                #m = 0
+                #b = 0
+                #for lay in self.layers[1:]:
+                #    m = max(max(np.ndarray.flatten(lay.dWeights)),m)
+                #    b = max(max(np.ndarray.flatten(lay.dBias)),b)
+                #print(m,b)
                 self.update(sizeBatch/gradientFactor)
 
     def test(self, testIn, testAns):
         correct = 0
         cost = 0
+        #correctArr = [0]*10
+        #incorectArr = [0]*10
         for i in range(len(testIn)):
-            if self.guess(np.ndarray.flatten(testIn[i])) == testAns[i]:
+            if self.guess(np.ndarray.flatten(testIn[i])/255) == testAns[i]:
                 correct += 1
+            #    correctArr[testAns[i]] += 1
+            #else:
+            #    incorectArr[testAns[i]] += 1
             cost +=self.cost(testAns[i])
+        #print(correctArr, incorectArr)
         return correct/len(testIn), cost/len(testIn)
     
     def testShow(self, testIn, testAns):
         correct = 0
         for i in range(len(testIn)):
-            guess = self.guess(np.ndarray.flatten(testIn[i]))
-            if guess == testAns[i]:
+            guess = self.guess(np.ndarray.flatten(testIn[i])/255)
+            if guess == testAns[i]: 
                 correct += 1
+            
             
             printImage(testIn[i])
             print("AI guessed", guess, "correct answer was", testAns[i])
@@ -77,9 +89,8 @@ class Ml:
         for i in range(epochs):
             self.resetDelta()
             t1 = time.time()
-            self.runEpoch(trainIn, trainAns,100, max(1, 4/(i+1)))
+            self.runEpoch(trainIn, trainAns,100, 1)
             print("Epoch ran in: ", round(time.time()-t1,4), " seconds")
-            t2 = time.time()
             score = self.test(trainIn[:10000],trainAns[:10000])
-            print("Score for the network after ", i+1, " ephochs is ", score)
-            print("Score calculated on 10000 examples from the training data in ", round(time.time()-t2,4), " seconds")
+            print("Score for the network after ", i+1, " epochs is ", score)
+            

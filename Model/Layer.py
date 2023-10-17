@@ -6,6 +6,7 @@ class Layer:
         self.nbrNodes = nbrNodes
         self.prevLayer = prevLayer
         self.nodes = np.zeros(nbrNodes)
+        self.nodesNonSigmoid = np.zeros(nbrNodes)
         self.func = np.vectorize(func)
         self.funcDer = np.vectorize(funcDer)
         self.weights = np.array([[np.random.normal() for _ in range(prevNbrNodes)] for _ in range(self.nbrNodes)])
@@ -15,11 +16,12 @@ class Layer:
         self.layerNbr = -1
 
     def mul(self, vec):
-        self.nodes = self.func(self.weights.dot(vec) + self.bias)
+        self.nodesNonSigmoid = self.weights.dot(vec) + self.bias
+        self.nodes = self.func(self.nodesNonSigmoid)
         return self.nodes
     
     def backProp(self, dCdA):
-        dZ = np.array(list(map(self.funcDer, self.nodes))).reshape(self.nbrNodes,1)
+        dZ = np.array(list(map(self.funcDer, self.nodesNonSigmoid))).reshape(self.nbrNodes,1)
         dN = (dZ * dCdA)
         self.backPropWeights(dN)
         self.backPropBias(dN)

@@ -1,12 +1,11 @@
 import numpy as np
-import random as r
 from .Sigmoid import sigmoid, sigmoidDer
 class Layer:
     def __init__(self, nbrNodes, prevNbrNodes,prevLayer = None, func = sigmoid, funcDer = sigmoidDer) -> None:
         self.nbrNodes = nbrNodes
         self.prevLayer = prevLayer
         self.nodes = np.zeros(nbrNodes)
-        self.nodesNonSigmoid = np.zeros(nbrNodes)
+        self.nodesNonFunc = np.zeros(nbrNodes)
         self.func = np.vectorize(func)
         self.funcDer = np.vectorize(funcDer)
         self.weights = np.array([[np.random.normal() for _ in range(prevNbrNodes)] for _ in range(self.nbrNodes)])
@@ -16,26 +15,26 @@ class Layer:
         self.layerNbr = -1
 
     def mul(self, vec):
-        self.nodesNonSigmoid = self.weights.dot(vec) + self.bias
-        self.nodes = self.func(self.nodesNonSigmoid)
+        self.nodesNonFunc = self.weights @ vec + self.bias
+        self.nodes = self.func(self.nodesNonFunc)
         return self.nodes
     
     def backProp(self, dCdA):
-        dZ = np.array(list(map(self.funcDer, self.nodesNonSigmoid))).reshape(self.nbrNodes,1)
+        dZ = np.array(list(map(self.funcDer, self.nodesNonFunc))).reshape(self.nbrNodes,1)
         dN = (dZ * dCdA)
         self.backPropWeights(dN)
         self.backPropBias(dN)
         return self.backPropCalcdCdAj(dN)
 
     def backPropWeights(self, dN):
-        dW = dN.dot(np.array([self.prevLayer.nodes]))
+        dW = dN @ np.array([self.prevLayer.nodes])
         self.dWeights += dW
 
     def backPropBias(self, dN):
         self.dBias += dN.reshape(self.nbrNodes)
 
     def backPropCalcdCdAj(self, dN):
-        nextdCdA = (dN.reshape(1, dN.size)).dot(self.weights)
+        nextdCdA = dN.reshape(1, dN.size) @ self.weights
         return nextdCdA.reshape(nextdCdA.size,1)
 
     def dCostLastLayer(self, correctArray):

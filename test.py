@@ -14,60 +14,22 @@ print('X_test:  '  + str(test_X.shape))
 print('Y_test:  '  + str(test_y.shape))
 ai = Ml([28**2,50,50,10])
 from matplotlib import pyplot
-"""
-print(train_X[0])
-tot = 0
-correct = 0
-cost = 0
-rounds = int(input("nbr: "))
-for i in range(rounds):
-    g = ai.guess(np.ndarray.flatten(train_X[i])/255)
-    #print(g,train_y[i])
-    tot += 1
-    if g == train_y[i]:
-        correct += 1
-    cost += ai.cost(train_y[i])
-    ai.backProp(train_y[i])
-    #print(correct/tot,ai.cost(train_y[i]),"\n", ai.last)
-    #print()
-#
-tot = 0
-correct = 0
-cost = 0
-rounds = int(input("nbr: "))
-for i in range(rounds):
-    g = ai.guess(np.ndarray.flatten(test_X[i])/255)
-    #print(g,test_y[i])
-    tot += 1
-    if g == test_y[i]:
-        correct += 1
-    cost += ai.cost(test_y[i])
-    #print(correct/tot,ai.cost(test_y[i]),"\n", ai.last)
-"""
-print("with bias")
-print((train_X[0]))
-ai.train(train_X, train_y,50)
-print("final score on test data is ", ai.test(test_X[:10000],test_y[:10000]))
-for lay in ai.layers[1:]:
-    print(max(np.ndarray.flatten(lay.weights)))
-    print(max(np.ndarray.flatten(lay.bias)))
-ai.testShow(test_X,test_y)
+def getComand():
+    return int(input("""
+train untill saturation: 1
+run epochs: 2
+show on test data: 3
+quit : -1
+: """))
+comand = getComand()
+while comand != -1:
+    if comand == 1:
+        ai.train(train_X, train_y,50)
+        print("final score on test data is ", ai.test(test_X[:10000],test_y[:10000]))
+    elif comand == 2:
+        ai.train(train_X, train_y,int(input("How many epochs: ")))
+        print("final score on test data is ", ai.test(test_X[:10000],test_y[:10000]))
+    elif comand == 3:
+        ai.testShow(test_X,test_y, int(input("How many examples: ")))
+    comand = getComand()
 
-for i in range(9):  
-    g = ai.guess(np.ndarray.flatten(train_X[i]))
-    print(g)
-    pyplot.subplot(330 + 1 + i)
-    pyplot.imshow(train_X[i]/255, cmap=pyplot.get_cmap('gray'))
-pyplot.show()
-
-
-"""
-
-ai = Ml([5, 5])
-while True:
-    n = np.array([float(i) for i in input().split()])
-    ai.guess(n)
-    correct = int(input())
-    ai.backProp(correct)
-
-"""

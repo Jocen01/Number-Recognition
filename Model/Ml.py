@@ -16,20 +16,20 @@ class Ml:
         self.result = None
 
     def guess(self, arr):
-        self.start.nodes = arr
+        self.start.nodes = arr.reshape(-1,1)
         for l in self.layers[1:]:
             arr = l.mul(arr)
         self.result = arr
         return np.argmax(arr)
     
     def cost(self, correct):
-        c = np.zeros(self.layers[-1].nbrNodes)
-        c[correct] = 1
-        return sum(self.constFunc(self.result-c))
+        c = np.zeros((self.layers[-1].nbrNodes,1))
+        c[correct,0] = 1
+        return sum(self.constFunc(self.result-c))[0]
     
     def backProp(self, correct):
-        correctArr = np.zeros(self.layers[-1].nbrNodes)
-        correctArr[correct] = 1
+        correctArr = np.zeros((self.layers[-1].nbrNodes,1))
+        correctArr[correct,0] = 1
         dCdA = self.layers[-1].dCostLastLayer(correctArr)
         for lay in self.layers[:0:-1]:
             dCdA = lay.backProp(dCdA)

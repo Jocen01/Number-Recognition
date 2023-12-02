@@ -47,3 +47,11 @@ class Layer:
     def reset_delta(self):
         self.delta_weights = np.zeros(self.weights.shape)
         self.delta_bias = np.zeros(self.bias.shape)
+
+    def to_object(self):
+        return {
+            "nbr_nodes":self.nbr_nodes,
+            "weights":self.weights.tolist(),
+            "bias":self.bias.tolist()
+        }
+        

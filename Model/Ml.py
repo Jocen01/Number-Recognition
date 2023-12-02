@@ -1,10 +1,12 @@
 from .Layer import Layer
 from .StartLayer import StaryLayer
 from .Utilities import *
+from tkinter.filedialog import askopenfilename
 import numpy as np
 import random
 import time
-class Ml:
+import json
+class NeuralNetwork:
     def __init__(self, layers, batch_size=100, learn_rate=0.01, cost_func=None) -> None:
         self.layers = [StaryLayer(layers[0])] + [Layer(i,layers[idx]) for idx ,i in enumerate(layers[1:])]
         for i in range(len(self.layers)-1):
@@ -77,4 +79,18 @@ class Ml:
             print("Epoch ran in: ", round(time.time()-t1,4), " seconds")
             score = self.test(trainIn[:10000],trainAns[:10000])
             print("Score for the network after ", i+1, " epochs is ", round(score,5))
-            
+    
+    def save(self, filename):
+        with open(filename, "w") as file:
+            obj = {"nbr_layers": len(self.layers), "batch_size":self.batch_size, "learn_rate":self.lr,"layers":{}}
+            obj["layers"][0] = {"nodes":self.layers[0].nodes.tolist()}
+            for idx,lay in enumerate(self.layers[1:]):
+                obj[idx+1] = lay.to_object()
+            file.write(json.dumps(obj))
+    
+
+    def load():
+        filename = askopenfilename()
+        with open(filename, "w") as file:
+            nn = NeuralNetwork()
+            return nn

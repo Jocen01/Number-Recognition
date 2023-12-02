@@ -1,51 +1,49 @@
 import numpy as np
 from .Sigmoid import sigmoid, sigmoidDer
 class Layer:
-    def __init__(self, nbrNodes, prevNbrNodes,prevLayer = None, func = sigmoid, funcDer = sigmoidDer) -> None:
-        self.nbrNodes = nbrNodes
-        self.prevLayer = prevLayer
-        self.nodes = np.zeros(nbrNodes)
-        self.nodesNonFunc = np.zeros(nbrNodes)
+    def __init__(self, nbr_nodes, prev_nbr_nodes, prev_layer = None, func = sigmoid, func_derivative = sigmoidDer) -> None:
+        self.nbr_nodes = nbr_nodes
+        self.prev_layer = prev_layer
+        self.nodes = np.zeros((nbr_nodes,1))
         self.func = np.vectorize(func)
-        self.funcDer = np.vectorize(funcDer)
-        self.weights = np.array([[np.random.normal() for _ in range(prevNbrNodes)] for _ in range(self.nbrNodes)])
-        self.bias = np.array([np.random.normal()  for _ in range(self.nbrNodes)])
-        self.dWeights = np.zeros(self.weights.shape)
-        self.dBias = np.zeros(self.bias.shape)
-        self.layerNbr = -1
+        self.func_derivative = np.vectorize(func_derivative)
+        self.weights = np.array([[np.random.normal() for _ in range(prev_nbr_nodes)] for _ in range(self.nbr_nodes)])
+        self.bias = np.array([[np.random.normal()]for _ in range(self.nbr_nodes)])
+        self.delta_weights = np.zeros(self.weights.shape)
+        self.delta_bias = np.zeros(self.bias.shape)
+        self.layer_nbr = -1
 
     def mul(self, vec):
-        self.nodesNonFunc = self.weights @ vec + self.bias
-        self.nodes = self.func(self.nodesNonFunc)
-        return self.nodes
+        self.nodes = self.weights @ vec.reshape(-1,1) + self.bias
+        return self.func(self.nodes)
     
-    def backProp(self, dCdA):
-        dZ = np.array(list(map(self.funcDer, self.nodesNonFunc))).reshape(self.nbrNodes,1)
+    def backpropagation(self, dCdA):
+        dZ = self.func_derivative(self.nodes)
         dN = (dZ * dCdA)
-        self.backPropWeights(dN)
-        self.backPropBias(dN)
-        return self.backPropCalcdCdAj(dN)
+        self.backpropagation_weights(dN)
+        self.backpropagation_bias(dN)
+        return self.backpropagation_calc_dCdAj(dN)
 
-    def backPropWeights(self, dN):
-        dW = dN @ np.array([self.prevLayer.nodes])
-        self.dWeights += dW
+    def backpropagation_weights(self, dN):
+        dW = dN @ self.prev_layer.nodes.T
+        self.delta_weights += dW
 
-    def backPropBias(self, dN):
-        self.dBias += dN.reshape(self.nbrNodes)
+    def backpropagation_bias(self, dN):
+        self.delta_bias += dN
 
-    def backPropCalcdCdAj(self, dN):
-        nextdCdA = dN.reshape(1, dN.size) @ self.weights
-        return nextdCdA.reshape(nextdCdA.size,1)
+    def backpropagation_calc_dCdAj(self, dN):
+        nextdCdA = self.weights.T @ dN
+        return nextdCdA
 
-    def dCostLastLayer(self, correctArray):
-        dCdAj = (self.nodes - correctArray) * 2
-        return dCdAj.reshape(self.nbrNodes,1)
+    def MSE(self, correctArray):
+        dCdAj = (self.func(self.nodes) - correctArray) * 2
+        return dCdAj
     
-    def updateAfterBackProp(self, d):
-        self.weights -= self.dWeights/d
-        self.bias -= self.dBias/d
-        self.resetDelta()
+    def update_layer(self, lr):
+        self.weights -= self.delta_weights*lr
+        self.bias -= self.delta_bias*lr
+        self.reset_delta()
 
-    def resetDelta(self):
-        self.dWeights = np.zeros(self.weights.shape)
-        self.dBias = np.zeros(self.bias.shape)
+    def reset_delta(self):
+        self.delta_weights = np.zeros(self.weights.shape)
+        self.delta_bias = np.zeros(self.bias.shape)

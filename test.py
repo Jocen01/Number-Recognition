@@ -33,7 +33,7 @@ while comand != -1:
     elif comand == 3:
         nn.test_show(test_x,test_y, int(input("How many examples: ")))
     elif comand == 4:
-        #file = filedialog.askopenfilename()
-        nn.save("./save.txt")
+        file = input("give this network a name to save it under: ")
+        nn.save(f"./saved_networks/{file}.json")
     comand = getComand()
 

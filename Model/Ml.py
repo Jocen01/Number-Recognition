@@ -78,7 +78,7 @@ class NeuralNetwork:
             self.run_epoch(trainIn, trainAns)
             print("Epoch ran in: ", round(time.time()-t1,4), " seconds")
             score = self.test(trainIn[:10000],trainAns[:10000])
-            print("Score for the network after ", i+1, " epochs is ", round(score,5))
+            print("Score for the network after ", i+1, " epochs is ", score[0], round(score[1],5))
     
     def save(self, filename):
         with open(filename, "w") as file:

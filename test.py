@@ -29,7 +29,8 @@ while comand != -1:
         print("final score on test data is ", nn.test(test_x[:10000],test_y[:10000]))
     elif comand == 2:
         nn.train(train_x, train_y,int(input("How many epochs: ")))
-        print("final score on test data is ", nn.test(test_x[:10000],test_y[:10000]))
+        res = nn.test(test_x[:10000],test_y[:10000])
+        print("final score on test data is ", res[0], round(res[1],5))
     elif comand == 3:
         nn.test_show(test_x,test_y, int(input("How many examples: ")))
     elif comand == 4:

@@ -55,3 +55,6 @@ class Layer:
             "bias":self.bias.tolist()
         }
         
+    @classmethod
+    def _from_json(cls, obj):
+        pass

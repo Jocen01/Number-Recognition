@@ -20,6 +20,8 @@ def getComand():
 train untill saturation: 1
 run epochs: 2
 show on test data: 3
+save network: 4
+load network: 5
 quit : -1
 : """))
 comand = getComand()
@@ -35,9 +37,9 @@ while comand != -1:
         nn.test_show(test_x,test_y, int(input("How many examples: ")))
     elif comand == 4:
         file = input("give this network a name to save it under: ")
-        NeuralNetwork.save_pickle(f"./saved_networks/{file}.pkl", nn)
+        NeuralNetwork.save(f"./saved_networks/{file}.pkl", nn)
     elif comand == 5:
         file = input("Selcet a network to load: ")
-        nn = NeuralNetwork.load_pickle(f"./saved_networks/{file}.pkl")
+        nn = NeuralNetwork.load(f"./saved_networks/{file}.pkl")
     comand = getComand()
 

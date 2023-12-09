@@ -1,11 +1,14 @@
 from .Layer import Layer
 from .StartLayer import StaryLayer
 from .Utilities import *
-from tkinter.filedialog import askopenfilename
 import numpy as np
 import random
 import time
 import json
+import pickle
+class ob:
+    func = np.vectorize(lambda val: val**2)
+
 class NeuralNetwork:
     def __init__(self, layers, batch_size=100, learn_rate=0.01, cost_func=None) -> None:
         self.layers = [StaryLayer(layers[0])] + [Layer(i,layers[idx]) for idx ,i in enumerate(layers[1:])]
@@ -14,7 +17,7 @@ class NeuralNetwork:
         self.start = self.layers[0]
         self.batch_size = batch_size
         self.lr = learn_rate
-        self.const_function = np.vectorize(lambda val: val**2) if not cost_func else cost_func
+        self.cost_function = ob#None#np.vectorize(lambda val: val**2) if not cost_func else cost_func
         self.result = None
 
     def guess(self, arr):
@@ -28,7 +31,7 @@ class NeuralNetwork:
     def cost(self, correct):
         c = np.zeros((self.layers[-1].nbr_nodes,1))
         c[correct,0] = 1
-        return sum(self.const_function(self.result-c))[0]
+        return sum(self.cost_function.func(self.result-c))[0]
     
     def backpropagation(self, correct):
         correct_arr = np.zeros((self.layers[-1].nbr_nodes,1))
@@ -79,18 +82,12 @@ class NeuralNetwork:
             print("Epoch ran in: ", round(time.time()-t1,4), " seconds")
             score = self.test(trainIn[:10000],trainAns[:10000])
             print("Score for the network after ", i+1, " epochs is ", score[0], round(score[1],5))
-    
-    def save(self, filename):
-        with open(filename, "w") as file:
-            obj = {"nbr_layers": len(self.layers), "batch_size":self.batch_size, "learn_rate":self.lr,"layers":{}}
-            obj["layers"][0] = {"nodes":self.layers[0].nodes.tolist()}
-            for idx,lay in enumerate(self.layers[1:]):
-                obj[idx+1] = lay.to_object()
-            file.write(json.dumps(obj))
-    
 
-    def load():
-        filename = askopenfilename()
-        with open(filename, "w") as file:
-            nn = NeuralNetwork()
-            return nn
+    def save(filename, nn):
+        with open(filename, "wb") as file:
+            pickle.dump(nn,file)
+        
+    def load(filepath):
+        with open(filepath, "rb") as file:
+            return pickle.load(file)
+        

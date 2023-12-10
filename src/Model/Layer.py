@@ -1,4 +1,5 @@
 import numpy as np
+
 from .Sigmoid import sigmoid, sigmoidDer
 class Layer:
     def __init__(self, nbr_nodes, prev_nbr_nodes, prev_layer = None, func = sigmoid, func_derivative = sigmoidDer) -> None:

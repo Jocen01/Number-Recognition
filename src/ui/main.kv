@@ -1,0 +1,61 @@
+#:kivy 2.2.1
+
+#BoxLayout:
+#    orientation: 'vertical'
+#    Button:
+#        text:"hej"
+#    Hej:
+
+
+
+<Main>:   
+    orientation:'horizontal'
+    
+    BoxLayout:
+        id: left
+        orientation:'vertical'
+        Button:
+            text:"train"
+        Button:
+            text:"load"
+        Button:
+            text:"save"
+        TextInput:
+            multiline: False
+            hint_text: 'Enter text here'
+
+    BoxLayout:
+        id: middle
+        orientation:'vertical'
+        
+        DrawingWindow:
+            id: drawWindow
+
+        Button:
+            on_press: drawWindow.export_image()
+            text:"Guess"
+            
+        Label:
+            id: guess
+            text:"-"
+
+    BoxLayout:
+        id: right
+        orientation:'vertical'
+        Button:
+            text:"4!"
+        
+        Button:
+            text:"exit"
+            on_press: exit()
+
+
+<DrawingWindow>:
+    DrawingWidget:
+        id: drawCanvas
+        canvas:
+            Line:
+                points: (self.pos[0],self.pos[1],self.pos[0]+self.size[0],self.pos[1],self.pos[0]+self.size[0],self.pos[1]+self.size[1],self.pos[0],self.pos[1]+self.size[1],self.pos[0],self.pos[1])
+                width: 2
+
+#Main:

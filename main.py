@@ -1,6 +1,9 @@
 
 from keras.datasets import mnist
 from src.Model.NerualNetwork import NeuralNetwork
+from src.ui.home import MainApp
+
+MainApp().run()
 
 #loading the dataset
 (train_x, train_y), (test_x, test_y) = mnist.load_data()

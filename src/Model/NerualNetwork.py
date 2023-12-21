@@ -1,6 +1,6 @@
 from .Layer import Layer
 from .StartLayer import StaryLayer
-from .Utilities import *
+from .utilities import *
 import numpy as np
 import random
 import time

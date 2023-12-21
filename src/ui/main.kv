@@ -27,23 +27,28 @@
     BoxLayout:
         id: middle
         orientation:'vertical'
+        size_hint: None,1.
+        width: "250dp"
         
         DrawingWindow:
+            size_hint: None,None
+            size: "250dp","250dp"
             id: drawWindow
 
         Button:
-            on_press: drawWindow.export_image()
+            on_press: root.guess(drawWindow.get_image_array((28,280)))
             text:"Guess"
             
         Label:
             id: guess
-            text:"-"
+            text: "-"
 
     BoxLayout:
         id: right
         orientation:'vertical'
         Button:
-            text:"4!"
+            text:"clear"
+            on_press: drawWindow.ids.drawCanvas.clear()
         
         Button:
             text:"exit"
@@ -55,7 +60,16 @@
         id: drawCanvas
         canvas:
             Line:
+                # this is the outline and can be removed if there is a 
+                # on build function wich can call outline()
+                id: outline
                 points: (self.pos[0],self.pos[1],self.pos[0]+self.size[0],self.pos[1],self.pos[0]+self.size[0],self.pos[1]+self.size[1],self.pos[0],self.pos[1]+self.size[1],self.pos[0],self.pos[1])
                 width: 2
+                
+            #Color:
+            #    rgba: 1,0,0,0.3
+            #Rectangle:
+            #    size: self.size
+            #    pos: self.pos
 
 #Main:

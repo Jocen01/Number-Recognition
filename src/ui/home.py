@@ -1,43 +1,62 @@
 from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
+from kivy.properties import StringProperty
+from kivy.graphics.texture import Texture
 from kivy.graphics import Line
 from kivy.graphics import Color
 from PIL import Image
 import numpy as np
 from scipy.ndimage import zoom
-
-import matplotlib.pyplot as plt
-
-from kivy.logger import Logger, LOG_LEVELS
-import sys
-sys.path.append('.')
-from src.Model.utilities import printImage
+from keras.datasets import mnist
 from src.Model.NerualNetwork import NeuralNetwork
 
 
 
-
-Logger.setLevel(LOG_LEVELS["warning"])
-
-
-
 class Main(BoxLayout):
+    guess_str = StringProperty("-")
     def __init__(self, **kwargs):
         super(Main, self).__init__(**kwargs)
-        file = input("Selcet a network to load: ")
-        self.nn: NeuralNetwork = NeuralNetwork.load(f"./saved_networks/{file}.pkl")
-        self.guess_str = "-"
+        self.nn: NeuralNetwork = NeuralNetwork.load(f"./saved_networks/pre_loaded.pkl")
+        (self.train_x, self.train_y), (self.test_x, self.test_y) = mnist.load_data()
+        self.textures_gen = self.generate_img(self.test_x, self.test_y)
+        self.show_next_test()
 
-    def train(self):
-        pass
+    def train(self, epochs):
+        try:
+            epochs = int(epochs)
+        except ValueError:
+            self.guess_str = "Try input a number"
+            return
+        self.nn.train(self.train_x, self.train_y,int(input("How many epochs: ")))
 
-    def load(self):
-        pass
+    def show_score_test(self):
+        res = self.nn.test(self.test_x[:10000],self.test_y[:10000])
+        self.guess_str = f"final score is {res[0]}  {round(res[1],5)}"
+
+    def load(self, name):
+        self.nn: NeuralNetwork = NeuralNetwork.load(f"./saved_networks/{name}.pkl")
+
+    def save(self, name):
+        NeuralNetwork.save(f"./saved_networks/{name}.pkl", self.nn)
 
     def guess(self, img: np.array):
-        self.guess_str = self.nn.guess(img/img.max())
-        print(self.guess_str)
+        self.guess_str = str(self.nn.guess(img/img.max()))
+
+    def show_next_test(self):
+        texture, y = next(self.textures_gen)
+        self.guess_str = str(y)
+        self.ids["img"].texture=texture
+
+
+    def generate_img(self, data_x: np.array, data_y: np.array):
+        for X,y in zip(data_x,data_y):
+            texture = Texture.create(size=(280, 280), colorfmt='luminance')
+            texture.flip_vertical()
+            texture.blit_buffer(zoom(X,10).tobytes(), colorfmt='luminance', bufferfmt='ubyte')
+            yield texture, y
+
+
 
 class DrawingWindow(BoxLayout):
     def __init__(self, **kwargs):
@@ -54,25 +73,13 @@ class DrawingWindow(BoxLayout):
         # Extract the RGB values from the array
         rgb_values = image_array[:, :, :3]
         black_white = rgb_values.mean(axis=2)
-        print("Image Matrix (RGB values):")
-        print(rgb_values.shape)
+        
         return black_white
     
     def get_image_array(self, shape: (int,int) = None) -> np.array:
         img = self._export_image()
         org_size = img.shape
-        print("order",shape[0]/org_size[0])
         z = zoom(self.trim(img,delta=2), shape[0]/org_size[0],prefilter=False)
-        print(type(z),z.shape)
-        #fig = plt.figure()
-        #ax1 = fig.add_subplot(121)  # left side
-        #ax2 = fig.add_subplot(122)  # right side
-        #ascent = img
-        #result = z
-        #ax1.imshow(ascent, vmin=0, vmax=255)
-        #ax2.imshow(result, vmin=0, vmax=255)
-        #plt.show()
-        printImage(z)
         return z
     
     def trim(self, img: np.array, delta: int = 1) -> np.array:

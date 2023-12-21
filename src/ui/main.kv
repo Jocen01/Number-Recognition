@@ -16,11 +16,18 @@
         orientation:'vertical'
         Button:
             text:"train"
+            on_press: root.train(inp.text)
         Button:
             text:"load"
+            on_press: root.load(inp.text)
         Button:
             text:"save"
+            on_press: root.save(inp.text)
+        Button:
+            text:"test"
+            on_press: root.show_score_test()
         TextInput:
+            id: inp
             multiline: False
             hint_text: 'Enter text here'
 
@@ -41,7 +48,7 @@
             
         Label:
             id: guess
-            text: "-"
+            text: root.guess_str
 
     BoxLayout:
         id: right
@@ -49,7 +56,11 @@
         Button:
             text:"clear"
             on_press: drawWindow.ids.drawCanvas.clear()
-        
+        Button:
+            text:"show test"
+            on_press: root.show_next_test()
+        Image:
+            id: img
         Button:
             text:"exit"
             on_press: exit()

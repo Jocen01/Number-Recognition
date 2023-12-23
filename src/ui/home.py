@@ -44,8 +44,8 @@ class Main(BoxLayout):
         self.guess_str = str(self.nn.guess(img/img.max()))
 
     def show_next_test(self):
-        texture, y = next(self.textures_gen)
-        self.guess_str = str(y)
+        texture, X, y = next(self.textures_gen)
+        self.guess_str = str(y)+"   "+ str(self.nn.guess(X))
         self.ids["img"].texture=texture
 
 
@@ -54,7 +54,7 @@ class Main(BoxLayout):
             texture = Texture.create(size=(280, 280), colorfmt='luminance')
             texture.flip_vertical()
             texture.blit_buffer(zoom(X,10).tobytes(), colorfmt='luminance', bufferfmt='ubyte')
-            yield texture, y
+            yield texture, X, y
 
 
 
